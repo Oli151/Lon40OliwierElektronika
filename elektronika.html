@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista elementów elektronicznych</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1f4037, #99f2c8);
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header {
+    background: #111;
+    color: white;
+    padding: 20px;
+    font-size: 24px;
+}
+
+.container {
+    padding: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    width: 250px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.item:hover {
+    transform: scale(1.05);
+}
+
+.item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+button {
+    padding: 10px 15px;
+    margin: 20px;
+    border: none;
+    border-radius: 8px;
+    background: #000;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #333;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+🔌 Lista elementów elektronicznych
+</header>
+
+<div class="container" id="lista"></div>
+
+<button onclick="dodajSprzet()">➕ Dodaj element</button>
+
+<script>
+
+let sprzety = [
+"Rezystor",
+"Kondensator",
+"Dioda LED",
+"Wyświetlacz siedmiosegmentowy",
+"Klawiatura alfanumeryczna 4x4",
+"Mikroswitch",
+"Fotorezystor",
+"Przekaźnik",
+"Silnik krokowy",
+"Servo SG-90",
+"Potencjometr",
+"Enkoder inkrementalny",
+"Czujnik ultradźwiękowy",
+"Kontaktron",
+"Wyświetlacz LCD"
+];
+
+async function pobierzZdjecie(nazwa) {
+    try {
+        let response = await fetch(
+            `https://pl.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(nazwa)}`
+        );
+        let data = await response.json();
+        return data.thumbnail ? data.thumbnail.source : null;
+    } catch {
+        return null;
+    }
+}
+
+async function wyswietlListe() {
+    let lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    for (let sprzet of sprzety) {
+        let div = document.createElement("div");
+        div.className = "item";
+
+        let img = document.createElement("img");
+        img.src = "https://via.placeholder.com/250x150?text=Ładowanie...";
+        div.appendChild(img);
+
+        let h3 = document.createElement("h3");
+        h3.innerText = sprzet;
+        div.appendChild(h3);
+
+        div.onclick = function() {
+            let url = "https://pl.wikipedia.org/wiki/" + encodeURIComponent(sprzet);
+            window.open(url, "_blank");
+        };
+
+        lista.appendChild(div);
+
+        let zdjecie = await pobierzZdjecie(sprzet);
+        if (zdjecie) {
+            img.src = zdjecie;
+        } else {
+            img.src = "https://via.placeholder.com/250x150?text=Brak+zdjęcia";
+        }
+    }
+}
+
+function dodajSprzet() {
+    let nowy = prompt("Podaj nazwę nowego elementu:");
+    if(nowy) {
+        sprzety.push(nowy);
+        wyswietlListe();
+    }
+}
+
+wyswietlListe();
+
+</script>
+
+</body>
+</html>
